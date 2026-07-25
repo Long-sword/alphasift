@@ -685,15 +685,24 @@ def _configure_tushare_client(pro: object, *, token: str) -> None:
     except Exception:
         pass
 
-    http_url = (
+    # Tushare posts to ``{__http_url}/{api_name}``. The official endpoint is
+    # ``http://api.waditu.com/dataapi`` (note the ``/dataapi`` suffix). Setting
+    # ``_DataApi__http_url`` to a bare host (``http://api.waditu.com``) makes
+    # every query POST to ``/daily`` / ``/daily_basic`` and return 404, so the
+    # frame comes back empty. Only override the URL when the user explicitly
+    # asked for one, and always normalize it to end with ``/dataapi``.
+    explicit_url = (
         os.getenv("TUSHARE_API_URL", "").strip()
         or os.getenv("TUSHARE_HTTP_URL", "").strip()
-        or _DEFAULT_TUSHARE_HTTP_URL
     )
-    try:
-        setattr(pro, "_DataApi__http_url", http_url)
-    except Exception:
-        pass
+    if explicit_url:
+        normalized = explicit_url.rstrip("/")
+        if not normalized.endswith("/dataapi"):
+            normalized = f"{normalized}/dataapi"
+        try:
+            setattr(pro, "_DataApi__http_url", normalized)
+        except Exception:
+            pass
 
 
 def _normalize_tushare_daily_frame(df: pd.DataFrame) -> pd.DataFrame:
