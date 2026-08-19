@@ -1,6 +1,6 @@
 {
   "trade_date": "20260818",
-  "universe_top300_computed": 300,
+  "universe_top300_computed": 296,
   "strategies": {
     "volume_breakout": {
       "name_cn": "策略6 放量突破 (趋势)",
