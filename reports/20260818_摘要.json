@@ -1,0 +1,476 @@
+{
+  "trade_date": "20260818",
+  "market": {
+    "advancing": 2121,
+    "declining": 3292,
+    "avg_change": 0.051,
+    "total_amount_yi": 24197.8
+  },
+  "strategies_top3": {
+    "双低选股(dual_low)": [
+      {
+        "code": "000001",
+        "name": "平安银行",
+        "industry": "银行",
+        "change_pct": -0.45,
+        "final_score": 81.5
+      },
+      {
+        "code": "601668",
+        "name": "中国建筑",
+        "industry": "建筑工程",
+        "change_pct": 0.0,
+        "final_score": 81.5
+      },
+      {
+        "code": "600016",
+        "name": "民生银行",
+        "industry": "银行",
+        "change_pct": -0.59,
+        "final_score": 80.8
+      }
+    ],
+    "稳健价值(quality_value)": [
+      {
+        "code": "601166",
+        "name": "兴业银行",
+        "industry": "银行",
+        "change_pct": 0.11,
+        "final_score": 83.1
+      },
+      {
+        "code": "601668",
+        "name": "中国建筑",
+        "industry": "建筑工程",
+        "change_pct": 0.0,
+        "final_score": 81.0
+      },
+      {
+        "code": "000001",
+        "name": "平安银行",
+        "industry": "银行",
+        "change_pct": -0.45,
+        "final_score": 77.1
+      }
+    ],
+    "蓝筹收益质量(blue_chip_income)": [
+      {
+        "code": "601318",
+        "name": "中国平安",
+        "industry": "保险",
+        "change_pct": -0.93,
+        "final_score": 82.3
+      },
+      {
+        "code": "601328",
+        "name": "交通银行",
+        "industry": "银行",
+        "change_pct": 1.59,
+        "final_score": 81.2
+      },
+      {
+        "code": "601668",
+        "name": "中国建筑",
+        "industry": "建筑工程",
+        "change_pct": 0.0,
+        "final_score": 78.4
+      }
+    ],
+    "低波质量(low_volatility_quality)": [
+      {
+        "code": "601328",
+        "name": "交通银行",
+        "industry": "银行",
+        "change_pct": 1.59,
+        "final_score": 74.9
+      },
+      {
+        "code": "601988",
+        "name": "中国银行",
+        "industry": "银行",
+        "change_pct": 2.2,
+        "final_score": 71.3
+      },
+      {
+        "code": "601919",
+        "name": "中远海控",
+        "industry": "水运",
+        "change_pct": 2.13,
+        "final_score": 71.0
+      }
+    ],
+    "放量突破(volume_breakout)": [
+      {
+        "code": "300024",
+        "name": "机器人",
+        "industry": "专用机械",
+        "change_pct": 6.45,
+        "final_score": 77.2
+      },
+      {
+        "code": "000725",
+        "name": "京东方A",
+        "industry": "元器件",
+        "change_pct": 6.41,
+        "final_score": 75.6
+      },
+      {
+        "code": "688169",
+        "name": "石头科技",
+        "industry": "家用电器",
+        "change_pct": 6.68,
+        "final_score": 75.1
+      }
+    ],
+    "缩量回踩(shrink_pullback)": [
+      {
+        "code": "000100",
+        "name": "TCL科技",
+        "industry": "元器件",
+        "change_pct": 0.96,
+        "final_score": 79.8
+      },
+      {
+        "code": "002648",
+        "name": "卫星化学",
+        "industry": "化工原料",
+        "change_pct": 3.99,
+        "final_score": 71.2
+      },
+      {
+        "code": "002714",
+        "name": "牧原股份",
+        "industry": "农业综合",
+        "change_pct": 1.63,
+        "final_score": 70.6
+      }
+    ],
+    "资金热度(capital_heat)": [
+      {
+        "code": "000725",
+        "name": "京东方A",
+        "industry": "元器件",
+        "change_pct": 6.41,
+        "final_score": 72.4
+      },
+      {
+        "code": "300024",
+        "name": "机器人",
+        "industry": "专用机械",
+        "change_pct": 6.45,
+        "final_score": 72.1
+      },
+      {
+        "code": "688126",
+        "name": "沪硅产业",
+        "industry": "半导体",
+        "change_pct": 3.69,
+        "final_score": 72.1
+      }
+    ],
+    "超跌反转(oversold_reversal)": [
+      {
+        "code": "603799",
+        "name": "华友钴业",
+        "industry": "小金属",
+        "change_pct": -2.76,
+        "final_score": 85.5
+      },
+      {
+        "code": "600578",
+        "name": "京能电力",
+        "industry": "火力发电",
+        "change_pct": -3.72,
+        "final_score": 85.5
+      },
+      {
+        "code": "000783",
+        "name": "长江证券",
+        "industry": "证券",
+        "change_pct": -2.74,
+        "final_score": 84.4
+      }
+    ],
+    "均衡多因子(balanced_alpha)": [
+      {
+        "code": "600036",
+        "name": "招商银行",
+        "industry": "银行",
+        "change_pct": 0.24,
+        "final_score": 76.1
+      },
+      {
+        "code": "601919",
+        "name": "中远海控",
+        "industry": "水运",
+        "change_pct": 2.13,
+        "final_score": 74.5
+      },
+      {
+        "code": "601668",
+        "name": "中国建筑",
+        "industry": "建筑工程",
+        "change_pct": 0.0,
+        "final_score": 73.5
+      }
+    ],
+    "趋势质量(momentum_quality)": [
+      {
+        "code": "601398",
+        "name": "工商银行",
+        "industry": "银行",
+        "change_pct": 1.46,
+        "final_score": 72.9
+      },
+      {
+        "code": "601919",
+        "name": "中远海控",
+        "industry": "水运",
+        "change_pct": 2.13,
+        "final_score": 72.1
+      },
+      {
+        "code": "600096",
+        "name": "云天化",
+        "industry": "农药化肥",
+        "change_pct": 3.96,
+        "final_score": 70.9
+      }
+    ]
+  },
+  "cross_resonance": [
+    {
+      "code": "601919",
+      "name": "中远海控",
+      "industry": "水运",
+      "hit_count": 5,
+      "strategies": [
+        "quality_value",
+        "blue_chip_income",
+        "low_volatility_quality",
+        "balanced_alpha",
+        "momentum_quality"
+      ]
+    },
+    {
+      "code": "000651",
+      "name": "格力电器",
+      "industry": "家用电器",
+      "hit_count": 5,
+      "strategies": [
+        "quality_value",
+        "blue_chip_income",
+        "low_volatility_quality",
+        "balanced_alpha",
+        "momentum_quality"
+      ]
+    },
+    {
+      "code": "601668",
+      "name": "中国建筑",
+      "industry": "建筑工程",
+      "hit_count": 4,
+      "strategies": [
+        "dual_low",
+        "quality_value",
+        "blue_chip_income",
+        "balanced_alpha"
+      ]
+    },
+    {
+      "code": "000001",
+      "name": "平安银行",
+      "industry": "银行",
+      "hit_count": 3,
+      "strategies": [
+        "dual_low",
+        "quality_value",
+        "blue_chip_income"
+      ]
+    },
+    {
+      "code": "600019",
+      "name": "宝钢股份",
+      "industry": "普钢",
+      "hit_count": 3,
+      "strategies": [
+        "quality_value",
+        "blue_chip_income",
+        "balanced_alpha"
+      ]
+    },
+    {
+      "code": "601328",
+      "name": "交通银行",
+      "industry": "银行",
+      "hit_count": 3,
+      "strategies": [
+        "quality_value",
+        "blue_chip_income",
+        "low_volatility_quality"
+      ]
+    },
+    {
+      "code": "002714",
+      "name": "牧原股份",
+      "industry": "农业综合",
+      "hit_count": 3,
+      "strategies": [
+        "low_volatility_quality",
+        "shrink_pullback",
+        "momentum_quality"
+      ]
+    },
+    {
+      "code": "603799",
+      "name": "华友钴业",
+      "industry": "小金属",
+      "hit_count": 3,
+      "strategies": [
+        "oversold_reversal",
+        "balanced_alpha",
+        "momentum_quality"
+      ]
+    },
+    {
+      "code": "600104",
+      "name": "上汽集团",
+      "industry": "汽车整车",
+      "hit_count": 2,
+      "strategies": [
+        "dual_low",
+        "quality_value"
+      ]
+    },
+    {
+      "code": "601318",
+      "name": "中国平安",
+      "industry": "保险",
+      "hit_count": 2,
+      "strategies": [
+        "blue_chip_income",
+        "balanced_alpha"
+      ]
+    },
+    {
+      "code": "601857",
+      "name": "中国石油",
+      "industry": "石油开采",
+      "hit_count": 2,
+      "strategies": [
+        "low_volatility_quality",
+        "balanced_alpha"
+      ]
+    },
+    {
+      "code": "300024",
+      "name": "机器人",
+      "industry": "专用机械",
+      "hit_count": 2,
+      "strategies": [
+        "volume_breakout",
+        "capital_heat"
+      ]
+    },
+    {
+      "code": "000725",
+      "name": "京东方A",
+      "industry": "元器件",
+      "hit_count": 2,
+      "strategies": [
+        "volume_breakout",
+        "capital_heat"
+      ]
+    },
+    {
+      "code": "688169",
+      "name": "石头科技",
+      "industry": "家用电器",
+      "hit_count": 2,
+      "strategies": [
+        "volume_breakout",
+        "capital_heat"
+      ]
+    },
+    {
+      "code": "002472",
+      "name": "双环传动",
+      "industry": "汽车配件",
+      "hit_count": 2,
+      "strategies": [
+        "volume_breakout",
+        "capital_heat"
+      ]
+    },
+    {
+      "code": "688126",
+      "name": "沪硅产业",
+      "industry": "半导体",
+      "hit_count": 2,
+      "strategies": [
+        "volume_breakout",
+        "capital_heat"
+      ]
+    },
+    {
+      "code": "600143",
+      "name": "金发科技",
+      "industry": "塑料",
+      "hit_count": 2,
+      "strategies": [
+        "volume_breakout",
+        "capital_heat"
+      ]
+    },
+    {
+      "code": "000100",
+      "name": "TCL科技",
+      "industry": "元器件",
+      "hit_count": 2,
+      "strategies": [
+        "shrink_pullback",
+        "momentum_quality"
+      ]
+    },
+    {
+      "code": "600938",
+      "name": "中国海油",
+      "industry": "石油开采",
+      "hit_count": 2,
+      "strategies": [
+        "shrink_pullback",
+        "momentum_quality"
+      ]
+    },
+    {
+      "code": "600795",
+      "name": "国电电力",
+      "industry": "火力发电",
+      "hit_count": 2,
+      "strategies": [
+        "shrink_pullback",
+        "balanced_alpha"
+      ]
+    },
+    {
+      "code": "600096",
+      "name": "云天化",
+      "industry": "农药化肥",
+      "hit_count": 2,
+      "strategies": [
+        "capital_heat",
+        "momentum_quality"
+      ]
+    },
+    {
+      "code": "002432",
+      "name": "九安医疗",
+      "industry": "医疗保健",
+      "hit_count": 2,
+      "strategies": [
+        "balanced_alpha",
+        "momentum_quality"
+      ]
+    }
+  ]
+}
