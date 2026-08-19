@@ -9,7 +9,7 @@ A股趋势 / 动量 选股策略 (策略6-10)
 - 策略10:momentum_quality 趋势质量 (综合)
 
 数据来源: Tushare pro
-交易日: 20260818
+交易日: 20260819
 """
 
 import os
@@ -21,7 +21,7 @@ import tushare as ts
 
 # ---------------- 配置 ----------------
 TOKEN = '9f640d421f866dde9a1888ab4193f77c43659d47446d717ffa343023'
-TRADE_DATE = '20260818'
+TRADE_DATE = '20260819'
 REPORT_DIR = '/workspace/reports'
 REPORT_PATH = os.path.join(REPORT_DIR, 'trend_momentum_result.json')
 
