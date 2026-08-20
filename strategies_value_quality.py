@@ -16,7 +16,7 @@ import tushare as ts
 
 # ========== 基础配置 ==========
 TUSHARE_TOKEN = "9f640d421f866dde9a1888ab4193f77c43659d47446d717ffa343023"
-TRADE_DATE = "20260819"
+TRADE_DATE = "20260820"
 TOP_ACTIVE = 300           # 成交额Top活跃股
 KLINE_DAYS = 30            # 取30日K线
 KLINE_LIMIT = 40           # 实际请求条数（多取点保险）
