@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 13:30 盘中选股策略报告 - 10策略并行筛选
-数据源: Tushare (token 已配置)
-最新交易日: 自动检测 (今日数据未发布则回退最近可用交易日)
+数据源:
+  - 盘中实时行情(最新价/涨跌/成交额/换手率/量比/PE): 腾讯财经 qt.gtimg.cn (今日盘中)
+  - 历史日线(技术指标计算): Tushare (前61交易日)
+  - 估值(PB/市值/股息率): Tushare daily_basic (最近已发布交易日)
 """
-import os, sys, json, time, math, warnings, datetime
+import os, sys, json, time, math, re, warnings, datetime
 warnings.filterwarnings("ignore")
 import numpy as np
 import pandas as pd
+import requests
 import tushare as ts
 
 TS_TOKEN = '9f640d421f866dde9a1888ab4193f77c43659d47446d717ffa343023'
@@ -15,33 +18,26 @@ ts.set_token(TS_TOKEN)
 pro = ts.pro_api()
 
 TODAY = datetime.date.today().strftime("%Y%m%d")
-HIST_DAYS = 62  # 交易历史长度(>=61 以支持60日收益 & MACD稳定)
+HIST_DAYS = 62  # 历史交易日长度(前61日用于技术指标, 第62日=今日实时)
 GLOBAL_AMOUNT_MIN = 2e8  # 全局成交额下限 2亿(元)
 
 def log(*a):
     print(*a, file=sys.stderr, flush=True)
 
-# ---------------- 1. 交易日历 & 最新交易日 ----------------
+# ---------------- 1. 交易日历(确认今日交易) & 历史日期 ----------------
 cal = pro.trade_cal(exchange='SSE', start_date='20260501', end_date=TODAY)
 cal = cal[cal['is_open'] == 1].sort_values('cal_date').reset_index(drop=True)
-# 最新交易日: 今日数据已发布的最近日期
-latest = None
-for d in reversed(cal['cal_date'].tolist()):
-    try:
-        t = pro.daily(trade_date=d, fields=['ts_code'])
-        if t is not None and len(t) > 0:
-            latest = d
-            break
-    except Exception as e:
-        log('daily probe fail', d, e)
-        continue
-if latest is None:
-    latest = cal['cal_date'].tolist()[-1]
-log('最新交易日(数据已发布):', latest, ' 今日:', TODAY)
+today_open = TODAY in set(cal['cal_date'].tolist())
+log('今日', TODAY, 'is_open=', 1 if today_open else 0)
 
-# 历史交易日列表(最近 HIST_DAYS 个, 含 latest)
-hist_dates = cal[cal['cal_date'] <= latest]['cal_date'].tolist()[-HIST_DAYS:]
-log('历史交易日数:', len(hist_dates), '从', hist_dates[0], '至', hist_dates[-1])
+# 今日实时基准日: TODAY; 历史用今日之前最近 HIST_DAYS-1 个交易日
+hist_dates = cal[cal['cal_date'] < TODAY]['cal_date'].tolist()[-(HIST_DAYS-1):]
+if len(hist_dates) < 20:
+    hist_dates = cal['cal_date'].tolist()[-(HIST_DAYS-1):]
+PREV_TRADE_DATE = hist_dates[-1]  # 昨一交易日(估值基准)
+log('历史交易日(技术面):', len(hist_dates), '从', hist_dates[0], '至', hist_dates[-1],
+    '| 今日实时基准:', TODAY, '| 估值基准日:', PREV_TRADE_DATE)
+latest = TODAY  # 报告日期=今日
 
 # ---------------- 2. 拉取历史日线(按交易日, 多线程) ----------------
 from concurrent.futures import ThreadPoolExecutor
@@ -62,16 +58,97 @@ with ThreadPoolExecutor(max_workers=8) as ex:
 daily_hist = pd.concat([r for r in res if r is not None and len(r)], ignore_index=True)
 log('历史日线拉取完成:', len(daily_hist), '行 耗时%.1fs' % (time.time()-t0))
 daily_hist['trade_date'] = daily_hist['trade_date'].astype(str)
+
+# ---------------- 2b. 腾讯财经: 全市场盘中实时行情 ----------------
+def fetch_qq_realtime(codes_qq):
+    """codes_qq: ['sh600519','sz000001',...] 返回 DataFrame"""
+    all_rows = []
+    for i in range(0, len(codes_qq), 200):
+        batch = codes_qq[i:i+200]
+        try:
+            r = requests.get('http://qt.gtimg.cn/q='+','.join(batch), timeout=15)
+            for line in r.text.strip().split(';\n'):
+                if not line.strip(): continue
+                m = re.search(r'v_(sh|sz)(\d+)="([^"]*)"', line)
+                if not m: continue
+                f = m.group(3).split('~')
+                if len(f) < 40: continue
+                def num(x):
+                    try: return float(x)
+                    except: return np.nan
+                code6 = m.group(2)
+                last = num(f[3])
+                if not (last > 0): continue  # 停牌/无效
+                pre_close = num(f[4])
+                opn = num(f[5])
+                vol_hand = num(f[6])  # 手
+                ts = f[30] if len(f)>30 else ''
+                pct = num(f[32])
+                high = num(f[33]) if len(f)>33 else np.nan
+                low = num(f[34]) if len(f)>34 else np.nan
+                turnover = num(f[38]) if len(f)>38 else np.nan  # 换手率%
+                pe = num(f[39]) if len(f)>39 else np.nan
+                amt_wan = num(f[37]) if len(f)>37 else np.nan  # 成交额(万元) - 腾讯统一万元单位
+                amount = amt_wan * 1e4  # 元
+                all_rows.append(dict(code6=code6, name_qq=f[1] if len(f)>1 else '',
+                    last=last, pre_close=pre_close, open=opn, high=high, low=low,
+                    vol_hand=vol_hand, amount=amount, pct=pct, turnover=turnover,
+                    pe_ttm=pe, ts=ts))
+        except Exception as e:
+            log('  腾讯批量失败 i=%d %s' % (i, str(e)[:80]))
+    return pd.DataFrame(all_rows)
+
+# 股票列表
+sb = pro.stock_basic(list_status='L',
+    fields=['ts_code','symbol','name','industry','market','list_date','delist_date'])
+sb['code6'] = sb['ts_code'].str[:6]
+def to_qq(tc): return ('sh' if tc.endswith('.SH') else 'sz') + tc[:6]
+codes_qq = sb['ts_code'].apply(to_qq).tolist()
+t0 = time.time()
+rt = fetch_qq_realtime(codes_qq)
+log('腾讯实时拉取: %d 只 耗时%.1fs' % (len(rt), time.time()-t0))
+if len(rt) == 0:
+    log('FATAL: 腾讯实时数据为空, 无法生成盘中报告')
+    sys.exit(1)
+# 验证最新时间戳
+sample_ts = rt['ts'].dropna().iloc[0] if len(rt) else ''
+log('实时数据时间戳样本:', sample_ts)
+
+# ---------------- 2c. 把今日实时数据拼成"今日K线"接到历史末尾 ----------------
+# 今日K线: open/high/low/close=最新价, pre_close=昨收, pct_chg=涨跌幅, vol=手, amount=元
+rt_map = rt.set_index('code6')
+today_klines = []
+for _, srow in sb.iterrows():
+    c6 = srow['code6']
+    if c6 not in rt_map.index: continue
+    rr = rt_map.loc[c6]
+    if isinstance(rr, pd.DataFrame): rr = rr.iloc[0]
+    today_klines.append(dict(
+        ts_code=srow['ts_code'], trade_date=TODAY,
+        open=rr['open'], high=rr['high'], low=rr['low'], close=rr['last'],
+        pre_close=rr['pre_close'], pct_chg=rr['pct'],
+        vol=rr['vol_hand'], amount=rr['amount'],
+        turnover=rr['turnover'], pe_ttm_rt=rr['pe_ttm']))
+today_df_rt = pd.DataFrame(today_klines)
+log('今日实时K线拼装:', len(today_df_rt), '只')
+
+# 合并历史+今日
+daily_hist = pd.concat([daily_hist, today_df_rt[['ts_code','trade_date','open','high','low','close','pre_close','pct_chg','vol','amount']]],
+                       ignore_index=True)
+daily_hist['vol'] = daily_hist['vol'].astype(float)
+daily_hist['amount'] = daily_hist['amount'].astype(float)
 daily_hist = daily_hist.sort_values(['ts_code','trade_date']).reset_index(drop=True)
 
-# 当日(最新交易日)行情 & 昨日(用于成交额对比)
-day_df = daily_hist[daily_hist['trade_date'] == latest].copy()
-prev_date = hist_dates[-2]
+# 当日(今日实时)行情 & 昨日(用于成交额对比)
+day_df = today_df_rt.copy()
+day_df['pct_chg'] = day_df['pct_chg'].astype(float)
+day_df['amount'] = day_df['amount'].astype(float)
+prev_date = hist_dates[-1]
 prev_df = daily_hist[daily_hist['trade_date'] == prev_date].copy()
-log('最新交易日股票数:', len(day_df), ' 前一交易日:', prev_date, len(prev_df))
+log('最新交易日(今日实时)股票数:', len(day_df), ' 前一交易日:', prev_date, len(prev_df))
 
-# ---------------- 3. 估值(daily_basic) & 股票列表 ----------------
-db = pro.daily_basic(trade_date=latest,
+# ---------------- 3. 估值(daily_basic 用昨交易日, PB/市值/股息率日内变化小) & 股票列表 ----------------
+db = pro.daily_basic(trade_date=PREV_TRADE_DATE,
     fields=['ts_code','trade_date','close','turnover_rate','turnover_rate_f','volume_ratio',
             'pe','pe_ttm','pb','ps','ps_ttm','dv_ratio','dv_ttm','total_share','float_share',
             'free_share','total_mv','circ_mv'])
@@ -194,12 +271,18 @@ feat['ts_code'] = codes
 feat = feat.merge(sb[['ts_code','name','industry','market','list_date']], on='ts_code', how='left')
 feat['close'] = last_close.values
 feat['pct_chg'] = pct_today.values
-feat['amount'] = pamt.iloc[-1].values  # 千元
-feat['amount_yi'] = feat['amount'] / 100000.0  # 亿
-feat['prev_amount_yi'] = (pamt.iloc[-2].reindex(codes).values) / 100000.0
-feat['vol_ratio'] = db.set_index('ts_code')['volume_ratio'].reindex(codes).values
-feat['turnover_rate'] = db.set_index('ts_code')['turnover_rate'].reindex(codes).values
-feat['pe_ttm'] = db.set_index('ts_code')['pe_ttm'].reindex(codes).values
+feat['amount'] = pamt.iloc[-1].values  # 元(实时)
+feat['amount_yi'] = feat['amount'] / 1e8  # 亿
+feat['prev_amount_yi'] = (pamt.iloc[-2].reindex(codes).values * 1e3) / 1e8  # 千元->元->亿
+# 今日盘中实时值(腾讯): PE_TTM、换手率；量比=今日成交额/近5日均成交额(自算)
+rt_feat = today_df_rt.set_index('ts_code')
+feat['pe_ttm'] = rt_feat['pe_ttm_rt'].reindex(codes).values  # 实时PE(腾讯)
+feat['turnover_rate'] = rt_feat['turnover'].reindex(codes).values  # 实时换手率
+# 量比: 今日成交额(腾讯,元) / 前5日均成交额(Tushare,千元*1e3=元) -> 同单位
+amt_today = pamt.iloc[-1].reindex(codes)  # 今日(元)
+amt_5d_avg = (pamt.iloc[-6:-1] * 1e3).mean().reindex(codes)  # 前5日 千元->元 后平均
+feat['vol_ratio'] = (amt_today / amt_5d_avg).values
+# PB/市值/股息率用昨交易日daily_basic(日内稳定)
 feat['pb'] = db.set_index('ts_code')['pb'].reindex(codes).values
 feat['total_mv_yi'] = db.set_index('ts_code')['total_mv'].reindex(codes).values / 10000.0  # 亿
 feat['circ_mv_yi'] = db.set_index('ts_code')['circ_mv'].reindex(codes).values / 10000.0
@@ -426,7 +509,7 @@ def apply_strategy(cfg, universe):
         log(f"  [{cfg['name']}] Level2 放宽(丢弃技术筛) 候选数={len(df_f)}")
     df_f.attrs['relax_lvl'] = relax_lvl
     if len(df_f) == 0:
-        return df_f, relaxed, 0
+        return df_f, relaxed, relax_lvl, 0
     # 评分
     df_f.attrs['pe_max'] = hf.get('pe_max', 80); df_f.attrs['pb_max'] = hf.get('pb_max', 8.0)
     df_f.attrs['ideal_vr'] = sp['ideal_vr']; df_f.attrs['ideal_tr'] = sp['ideal_tr']
@@ -511,22 +594,41 @@ for sname in STRATEGY_ORDER:
         (top.iloc[0]['name'] if len(top) else '无'))
 
 # ---------------- 9. 市场概况 ----------------
-# 指数
+# 指数: 优先腾讯实时指数, 回退昨日收盘
 idx_codes = {'000001.SH':'上证指数','000300.SH':'沪深300','399001.SZ':'深证成指','399006.SZ':'创业板指','000905.SH':'中证500'}
+def to_qq_idx(tc): return ('sh' if tc.endswith('.SH') else 'sz') + tc[:6]
+idx_map = {}
 try:
-    idx = pro.index_daily(trade_date=latest)
-    idx_prev = pro.index_daily(trade_date=prev_date)
-    idx_map = {}
-    for code, nm in idx_codes.items():
-        r = idx[idx['ts_code']==code]
-        rp_ = idx_prev[idx_prev['ts_code']==code]
-        if len(r):
-            row = r.iloc[0]
-            prev_close = rp_.iloc[0]['close'] if len(rp_) else row['pre_close']
-            idx_map[nm] = dict(close=row['close'], pct=(row['close']/prev_close-1)*100, amount=row.get('amount',0))
+    qq_idx_codes = ','.join([to_qq_idx(c) for c in idx_codes.keys()])
+    r = requests.get('http://qt.gtimg.cn/q='+qq_idx_codes, timeout=10)
+    for line in r.text.strip().split(';\n'):
+        if not line.strip(): continue
+        m = re.search(r'v_(sh|sz)(\d+)="([^"]*)"', line)
+        if not m: continue
+        f = m.group(3).split('~')
+        if len(f) < 5: continue
+        ts_code_full = ('%s.SH'%m.group(2)) if m.group(1)=='sh' else ('%s.SZ'%m.group(2))
+        nm = idx_codes.get(ts_code_full)
+        if not nm: continue
+        def num(x):
+            try: return float(x)
+            except: return np.nan
+        last = num(f[3]); pre_close = num(f[4])
+        if last > 0 and pre_close > 0:
+            idx_map[nm] = dict(close=last, pct=(last/pre_close-1)*100)
 except Exception as e:
-    log('index fetch fail', e)
-    idx_map = {}
+    log('qq index fail', e)
+# 回退: 用 Tushare 昨日 index_daily
+if not idx_map:
+    try:
+        idx_prev = pro.index_daily(trade_date=prev_date)
+        for code, nm in idx_codes.items():
+            rp_ = idx_prev[idx_prev['ts_code']==code]
+            if len(rp_):
+                idx_map[nm] = dict(close=float(rp_.iloc[0]['close']), pct=0.0)
+    except Exception as e:
+        log('index fallback fail', e)
+log('指数实时:', {k:round(v['pct'],2) for k,v in idx_map.items()})
 
 # 涨跌家数
 up = int((day_df['pct_chg']>0).sum())
@@ -536,19 +638,17 @@ limit_up = int((day_df['pct_chg']>=9.9).sum())
 limit_down = int((day_df['pct_chg']<=-9.9).sum())
 avg_chg = float(day_df['pct_chg'].mean())
 med_chg = float(day_df['pct_chg'].median())
-total_amt_yi = float(day_df['amount'].sum()/100000.0)
-prev_total_amt_yi = float(prev_df['amount'].sum()/100000.0)
+# 今日amount来自腾讯(元), 昨日amount来自Tushare(千元) -> 统一转亿
+total_amt_yi = float(day_df['amount'].sum()/1e8)
+prev_total_amt_yi = float(prev_df['amount'].sum()/1e5)  # 千元->亿
 amt_chg_pct = (total_amt_yi/prev_total_amt_yi-1)*100 if prev_total_amt_yi else 0
 
-# 板块强弱(行业)
+# 板块强弱(行业) - day_df['amount']为元(腾讯), 转/1e8 -> 亿
 ind_stat = day_df.merge(sb[['ts_code','industry']], on='ts_code', how='left')
-ind_grp = ind_stat.groupby('industry').agg(
-    cnt=('ts_code','size'), avg_chg=('pct_chg','mean'), total_amt=('amount','sum')).reset_index()
-ind_grp['total_amt_yi'] = ind_grp['total_amt']/100000.0
 ind_grp = ind_stat.groupby('industry').agg(
     avg_chg=('pct_chg','mean'), cnt=('ts_code','size'),
     total_amt_yi=('amount','sum')).reset_index()
-ind_grp['total_amt_yi'] = ind_grp['total_amt_yi']/100000.0
+ind_grp['total_amt_yi'] = ind_grp['total_amt_yi']/1e8  # 元->亿
 ind_top = ind_grp.sort_values('avg_chg', ascending=False).head(10)
 ind_bot = ind_grp.sort_values('avg_chg').head(8)
 
@@ -583,9 +683,12 @@ def fmt(x, d=2):
 lines = []
 lines.append(f"# 13:30 盘中选股策略报告 ({latest})")
 lines.append("")
-lines.append(f"> **报告日期**: {latest}  | **执行时点**: 13:30 盘中  | **数据基准**: 最近可用交易日 {latest} 收盘")
-lines.append(f"> 今日({TODAY})为A股交易日(is_open=1)，但盘中实时数据尚未发布，本报告基于最近可用交易日 **{latest}** 收盘数据生成。")
-lines.append(f"> **数据源**: Tushare | **评分方式**: 本地多因子评分(技术面+基本面) | **历史窗口**: {len(hist_dates)} 个交易日(未复权日线)")
+rt_time_str = sample_ts
+lines.append(f"> **报告日期**: {latest}  | **执行时点**: 13:30 盘中  | **数据基准**: 今日盘中实时行情")
+lines.append(f"> **实时数据源**: 腾讯财经 qt.gtimg.cn (最新价/涨跌/成交额/换手率/PE_TTM)，实时时间戳: {rt_time_str}")
+lines.append(f"> **历史数据**: Tushare 前{len(hist_dates)}交易日未复权日线(技术指标计算) | **估值基准**: {PREV_TRADE_DATE} daily_basic(PB/总市值/股息率, 日内稳定)")
+lines.append(f"> 今日为A股交易日(is_open=1)，本报告基于**盘中实时数据**生成；量比按今日成交额/前5日均成交额自算。")
+lines.append(f"> **评分方式**: 本地多因子评分(技术面+基本面)")
 lines.append("")
 
 # 市场概况
@@ -753,7 +856,7 @@ lines.append("")
 
 lines.append("**风险提示**:")
 lines.append("")
-lines.append("- 本报告基于" + latest + "收盘快照数据，13:30盘中实时行情可能已变化，次日开盘需结合集合竞价复核。")
+lines.append(f"- 本报告基于 {latest} 盘中实时行情(腾讯财经，时间戳{rt_time_str})生成，行情仍在变动，尾盘与收盘可能继续变化，次日开盘需结合集合竞价复核。")
 lines.append("- 技术指标采用未复权日线计算，除权除息日附近存在一定失真。")
 lines.append("- 策略为量化筛选结果，不构成投资建议；实际操作需结合个股公告、行业政策与大盘环境。")
 lines.append("- 放宽条件的策略(已标注)命中质量下降，需人工二次确认。")
@@ -785,7 +888,7 @@ with open(rep_path, 'w', encoding='utf-8') as f:
 log('报告已写入:', rep_path)
 
 # ---------------- 13. 输出摘要 JSON 供推送 ----------------
-summary = dict(latest=latest, today=TODAY,
+summary = dict(latest=latest, today=TODAY, rt_source='腾讯财经qt.gtimg.cn', rt_timestamp=sample_ts, is_realtime=True,
     market=dict(up=up, down=down, flat=flat, limit_up=limit_up, limit_down=limit_down,
                 avg_chg=avg_chg, total_amt_yi=total_amt_yi, prev_total_amt_yi=prev_total_amt_yi, amt_chg_pct=amt_chg_pct,
                 idx=idx_map,
