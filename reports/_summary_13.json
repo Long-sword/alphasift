@@ -1,0 +1,546 @@
+{
+  "latest": "20260819",
+  "today": "20260820",
+  "market": {
+    "up": 449,
+    "down": 5069,
+    "flat": 23,
+    "limit_up": 43,
+    "limit_down": 367,
+    "avg_chg": -4.017892311857065,
+    "total_amt_yi": 25300.105689565702,
+    "prev_total_amt_yi": 24197.785784895295,
+    "amt_chg_pct": 4.555457736792157,
+    "idx": {
+      "上证指数": {
+        "close": 3894.4224,
+        "pct": -2.402857206081832,
+        "amount": 1218107974.0561
+      },
+      "沪深300": {
+        "close": 4588.6955,
+        "pct": -2.9014666554544877,
+        "amount": 705253505.4107
+      },
+      "深证成指": {
+        "close": 13890.1523,
+        "pct": -5.008329939532685,
+        "amount": 735131805.65698
+      },
+      "创业板指": {
+        "close": 3473.4932,
+        "pct": -6.262778586096673,
+        "amount": 291759990.37243
+      },
+      "中证500": {
+        "close": 7783.4558,
+        "pct": -4.814869954740608,
+        "amount": 478344926.6849
+      }
+    },
+    "top_industries": [
+      [
+        "焦炭加工",
+        6.53
+      ],
+      [
+        "银行",
+        1.46
+      ],
+      [
+        "港口",
+        0.69
+      ],
+      [
+        "黄金",
+        0.47
+      ],
+      [
+        "煤炭开采",
+        0.41
+      ]
+    ]
+  },
+  "strategies": {
+    "dual_low": {
+      "display": "双低选股",
+      "npass": 102,
+      "nres": 102,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "601668.SH",
+          "name": "中国建筑",
+          "industry": "建筑工程",
+          "close": 4.41,
+          "pct": 1.15,
+          "score": 82.5
+        },
+        {
+          "code": "600016.SH",
+          "name": "民生银行",
+          "industry": "银行",
+          "close": 3.43,
+          "pct": 1.18,
+          "score": 82.1
+        },
+        {
+          "code": "000001.SZ",
+          "name": "平安银行",
+          "industry": "银行",
+          "close": 11.27,
+          "pct": 1.99,
+          "score": 81.5
+        }
+      ]
+    },
+    "quality_value": {
+      "display": "稳健价值",
+      "npass": 235,
+      "nres": 235,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "601166.SH",
+          "name": "兴业银行",
+          "industry": "银行",
+          "close": 18.24,
+          "pct": 2.18,
+          "score": 90.2
+        },
+        {
+          "code": "000001.SZ",
+          "name": "平安银行",
+          "industry": "银行",
+          "close": 11.27,
+          "pct": 1.99,
+          "score": 89.2
+        },
+        {
+          "code": "600919.SH",
+          "name": "江苏银行",
+          "industry": "银行",
+          "close": 11.95,
+          "pct": 2.05,
+          "score": 88.4
+        }
+      ]
+    },
+    "blue_chip_income": {
+      "display": "蓝筹收益质量",
+      "npass": 113,
+      "nres": 113,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "601166.SH",
+          "name": "兴业银行",
+          "industry": "银行",
+          "close": 18.24,
+          "pct": 2.18,
+          "score": 91.0
+        },
+        {
+          "code": "000001.SZ",
+          "name": "平安银行",
+          "industry": "银行",
+          "close": 11.27,
+          "pct": 1.99,
+          "score": 89.9
+        },
+        {
+          "code": "600036.SH",
+          "name": "招商银行",
+          "industry": "银行",
+          "close": 39.15,
+          "pct": 2.25,
+          "score": 88.8
+        }
+      ]
+    },
+    "low_volatility_quality": {
+      "display": "低波质量",
+      "npass": 93,
+      "nres": 47,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "601919.SH",
+          "name": "中远海控",
+          "industry": "水运",
+          "close": 16.55,
+          "pct": 1.47,
+          "score": 80.7
+        },
+        {
+          "code": "600919.SH",
+          "name": "江苏银行",
+          "industry": "银行",
+          "close": 11.95,
+          "pct": 2.05,
+          "score": 80.0
+        },
+        {
+          "code": "600036.SH",
+          "name": "招商银行",
+          "industry": "银行",
+          "close": 39.15,
+          "pct": 2.25,
+          "score": 79.4
+        }
+      ]
+    },
+    "volume_breakout": {
+      "display": "放量突破",
+      "npass": 19,
+      "nres": 19,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "600547.SH",
+          "name": "山东黄金",
+          "industry": "黄金",
+          "close": 32.6,
+          "pct": 6.5,
+          "score": 84.9
+        },
+        {
+          "code": "600598.SH",
+          "name": "北大荒",
+          "industry": "种植业",
+          "close": 13.86,
+          "pct": 2.97,
+          "score": 82.9
+        },
+        {
+          "code": "600740.SH",
+          "name": "山西焦化",
+          "industry": "焦炭加工",
+          "close": 3.74,
+          "pct": 4.18,
+          "score": 76.8
+        }
+      ]
+    },
+    "shrink_pullback": {
+      "display": "缩量回踩",
+      "npass": 48,
+      "nres": 48,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "002648.SZ",
+          "name": "卫星化学",
+          "industry": "化工原料",
+          "close": 26.82,
+          "pct": -0.04,
+          "score": 77.5
+        },
+        {
+          "code": "300014.SZ",
+          "name": "亿纬锂能",
+          "industry": "电气设备",
+          "close": 55.4,
+          "pct": -2.22,
+          "score": 75.0
+        },
+        {
+          "code": "000100.SZ",
+          "name": "TCL科技",
+          "industry": "元器件",
+          "close": 5.05,
+          "pct": -3.63,
+          "score": 75.0
+        }
+      ]
+    },
+    "capital_heat": {
+      "display": "资金热度",
+      "npass": 55,
+      "nres": 55,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "600547.SH",
+          "name": "山东黄金",
+          "industry": "黄金",
+          "close": 32.6,
+          "pct": 6.5,
+          "score": 81.5
+        },
+        {
+          "code": "600598.SH",
+          "name": "北大荒",
+          "industry": "种植业",
+          "close": 13.86,
+          "pct": 2.97,
+          "score": 80.2
+        },
+        {
+          "code": "301358.SZ",
+          "name": "湖南裕能",
+          "industry": "电气设备",
+          "close": 71.5,
+          "pct": 2.07,
+          "score": 78.9
+        }
+      ]
+    },
+    "oversold_reversal": {
+      "display": "超跌反转",
+      "npass": 507,
+      "nres": 507,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "601888.SH",
+          "name": "中国中免",
+          "industry": "旅游服务",
+          "close": 52.88,
+          "pct": -1.86,
+          "score": 85.7
+        },
+        {
+          "code": "601127.SH",
+          "name": "赛力斯",
+          "industry": "汽车整车",
+          "close": 50.48,
+          "pct": -2.62,
+          "score": 83.6
+        },
+        {
+          "code": "300059.SZ",
+          "name": "东方财富",
+          "industry": "证券",
+          "close": 18.73,
+          "pct": -2.6,
+          "score": 83.0
+        }
+      ]
+    },
+    "balanced_alpha": {
+      "display": "均衡多因子",
+      "npass": 461,
+      "nres": 461,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "601919.SH",
+          "name": "中远海控",
+          "industry": "水运",
+          "close": 16.55,
+          "pct": 1.47,
+          "score": 77.3
+        },
+        {
+          "code": "600036.SH",
+          "name": "招商银行",
+          "industry": "银行",
+          "close": 39.15,
+          "pct": 2.25,
+          "score": 75.8
+        },
+        {
+          "code": "600919.SH",
+          "name": "江苏银行",
+          "industry": "银行",
+          "close": 11.95,
+          "pct": 2.05,
+          "score": 75.8
+        }
+      ]
+    },
+    "momentum_quality": {
+      "display": "趋势质量",
+      "npass": 364,
+      "nres": 364,
+      "relaxed": false,
+      "relax_lvl": 0,
+      "top3": [
+        {
+          "code": "601872.SH",
+          "name": "招商轮船",
+          "industry": "水运",
+          "close": 18.6,
+          "pct": 3.45,
+          "score": 78.4
+        },
+        {
+          "code": "601919.SH",
+          "name": "中远海控",
+          "industry": "水运",
+          "close": 16.55,
+          "pct": 1.47,
+          "score": 77.2
+        },
+        {
+          "code": "603259.SH",
+          "name": "药明康德",
+          "industry": "化学制药",
+          "close": 164.0,
+          "pct": -1.9,
+          "score": 77.0
+        }
+      ]
+    }
+  },
+  "resonance": [
+    {
+      "code": "601229.SH",
+      "name": "上海银行",
+      "industry": "银行",
+      "n": 6,
+      "strategies": [
+        "双低选股",
+        "稳健价值",
+        "蓝筹收益质量",
+        "低波质量",
+        "均衡多因子",
+        "趋势质量"
+      ]
+    },
+    {
+      "code": "600919.SH",
+      "name": "江苏银行",
+      "industry": "银行",
+      "n": 6,
+      "strategies": [
+        "双低选股",
+        "稳健价值",
+        "蓝筹收益质量",
+        "低波质量",
+        "均衡多因子",
+        "趋势质量"
+      ]
+    },
+    {
+      "code": "601919.SH",
+      "name": "中远海控",
+      "industry": "水运",
+      "n": 5,
+      "strategies": [
+        "稳健价值",
+        "蓝筹收益质量",
+        "低波质量",
+        "均衡多因子",
+        "趋势质量"
+      ]
+    },
+    {
+      "code": "000001.SZ",
+      "name": "平安银行",
+      "industry": "银行",
+      "n": 4,
+      "strategies": [
+        "双低选股",
+        "稳健价值",
+        "蓝筹收益质量",
+        "低波质量"
+      ]
+    },
+    {
+      "code": "600036.SH",
+      "name": "招商银行",
+      "industry": "银行",
+      "n": 4,
+      "strategies": [
+        "蓝筹收益质量",
+        "低波质量",
+        "均衡多因子",
+        "趋势质量"
+      ]
+    },
+    {
+      "code": "601668.SH",
+      "name": "中国建筑",
+      "industry": "建筑工程",
+      "n": 3,
+      "strategies": [
+        "双低选股",
+        "稳健价值",
+        "蓝筹收益质量"
+      ]
+    },
+    {
+      "code": "600016.SH",
+      "name": "民生银行",
+      "industry": "银行",
+      "n": 3,
+      "strategies": [
+        "双低选股",
+        "稳健价值",
+        "蓝筹收益质量"
+      ]
+    },
+    {
+      "code": "601328.SH",
+      "name": "交通银行",
+      "industry": "银行",
+      "n": 3,
+      "strategies": [
+        "稳健价值",
+        "蓝筹收益质量",
+        "低波质量"
+      ]
+    }
+  ],
+  "next_watch": [
+    {
+      "code": "601229.SH",
+      "name": "上海银行",
+      "industry": "银行",
+      "n": 6
+    },
+    {
+      "code": "600919.SH",
+      "name": "江苏银行",
+      "industry": "银行",
+      "n": 6
+    },
+    {
+      "code": "601919.SH",
+      "name": "中远海控",
+      "industry": "水运",
+      "n": 5
+    },
+    {
+      "code": "000001.SZ",
+      "name": "平安银行",
+      "industry": "银行",
+      "n": 4
+    },
+    {
+      "code": "600036.SH",
+      "name": "招商银行",
+      "industry": "银行",
+      "n": 4
+    },
+    {
+      "code": "601668.SH",
+      "name": "中国建筑",
+      "industry": "建筑工程",
+      "n": 1
+    },
+    {
+      "code": "601166.SH",
+      "name": "兴业银行",
+      "industry": "银行",
+      "n": 1
+    },
+    {
+      "code": "600547.SH",
+      "name": "山东黄金",
+      "industry": "黄金",
+      "n": 1
+    }
+  ]
+}
