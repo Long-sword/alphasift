@@ -21,7 +21,7 @@ import tushare as ts
 
 # ---------------- 配置 ----------------
 TOKEN = '9f640d421f866dde9a1888ab4193f77c43659d47446d717ffa343023'
-TRADE_DATE = '20260820'
+TRADE_DATE = '20260901'
 REPORT_DIR = '/workspace/reports'
 REPORT_PATH = os.path.join(REPORT_DIR, 'trend_momentum_result.json')
 
